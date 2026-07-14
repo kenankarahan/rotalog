@@ -24,7 +24,19 @@ if "db_data" not in st.session_state:
 
 if "embedding_model" not in st.session_state:
     with st.spinner("Yapay Zeka Asistanı Hazırlanıyor... Lütfen Bekleyin ( İlk açılışta biraz sürebilir. )"):
-        st.session_state["embedding_model"] = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+        import torch
+        
+        if torch.cuda.is_available():
+            device = "cuda"
+        elif torch.backends.mps.is_available():
+            device = "mps"
+        else:
+            device = "cpu"
+        
+        st.session_state["embedding_model"] = SentenceTransformer(
+            "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2", 
+            device=device
+        )
     st.rerun()
 
 embedding_model = st.session_state["embedding_model"]
@@ -66,18 +78,35 @@ def markdown_to_pdf(markdown_text, route_name, params):
     """
     return HTML(string=html_template).write_pdf()
 
-try:
-    operations_collection = get_vector_collection(collection_name="logistic_operations")
-    if st.session_state["db_data"] is None:
-        raw_data = operations_collection.get(include=['metadatas'])
+@st.cache_resource
+def load_vector_db():
+    try:
+        coll = get_vector_collection(collection_name="logistic_operations")
+        return coll
+    except Exception as e:
+        st.error(f"Vektör veritabanına bağlanırken hata: {str(e)}")
+        return None
+
+operations_collection = load_vector_db()
+
+# İlk veri kümesini çekme işlemini önbelleğe alıp CPU yükünü sıfırlıyoruz
+@st.cache_resource
+def fetch_initial_dataframe(_collection):
+    if _collection is None:
+        return pd.DataFrame()
+    try:
+        raw_data = _collection.get(include=['metadatas'])
         if raw_data and raw_data['metadatas']:
-            st.session_state["db_data"] = pd.DataFrame(raw_data['metadatas'])
-        else:
-            st.session_state["db_data"] = pd.DataFrame()
-    df = st.session_state["db_data"]
-except Exception as e:
-    st.error(f"Veri tabanından veri çekilirken hata oluştu: {str(e)}")
-    df = pd.DataFrame()
+            return pd.DataFrame(raw_data['metadatas'])
+        return pd.DataFrame()
+    except Exception as e:
+        st.error(f"Veri tabanından veri çekilirken hata oluştu: {str(e)}")
+        return pd.DataFrame()
+
+if st.session_state["db_data"] is None:
+    st.session_state["db_data"] = fetch_initial_dataframe(operations_collection)
+
+df = st.session_state["db_data"]
 
 st.title("🚚 RotaLog AI - Lojistik Yönetim ve Operasyon İyileştirme Paneli")
 st.markdown("---")
@@ -291,6 +320,7 @@ with tab1:
                     
                     st.session_state["processed_files"].add(file_identifier)
                     st.session_state["db_data"] = None
+                    fetch_initial_dataframe.clear() 
                     st.success(f"✅ {len(new_data)} adet yeni sefer verisi hafızaya ve grafiklere başarıyla eklendi!")
                     st.rerun()
                 else:
