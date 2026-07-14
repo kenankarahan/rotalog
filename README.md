@@ -86,7 +86,7 @@ Traditional enterprise AI pipelines rely heavily on third-party cloud APIs (Open
 
 **RotaLog AI completely breaks this paradigm:**
 1.  **Zero API Overhead:** No token constraints, monthly tiers, or request limits.
-2.  **Air-Gapped Compliance:** Fleet asset data, driver driving hours, and financial damage reports never leave your local physical bare-metal hardware or on-premise cloud infrastructure.
+2.  **Air-Gapped Compliance:** Fleet asset data, driver driving hours, and financial damage reports never leave your local physical bare-metal hardware.
 
 ---
 
