@@ -48,8 +48,8 @@ ollama pull aya
 
 ### 3. Clone and Setup Environment
 ```bash
-git clone [https://github.com/YOUR_USERNAME/RotaLog-AI.git](https://github.com/YOUR_USERNAME/RotaLog-AI.git)
-cd RotaLog-AI
+git clone [https://github.com/kenankarahan/rotalog](https://github.com/kenankarahan/rotalog)
+cd rotalog
 
 # Create a virtual environment
 python -m venv venv
