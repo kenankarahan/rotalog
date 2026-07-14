@@ -70,7 +70,6 @@ streamlit run app.py
 ## 🗃️ Repository File Structure
 
 ```
-├── .streamlit/               # Streamlit styling configurations
 ├── CSV_DATA/                 # Server-side physical CSV audit archives
 ├── agent.py                  # AI Agent Layer, Vector DB triggers & Ollama generation
 ├── app.py                    # Core Frontend UI Layout, state-caches & dashboards
