@@ -48,7 +48,7 @@ ollama pull aya
 
 ### 3. Clone and Setup Environment
 ```bash
-git clone [https://github.com/kenankarahan/rotalog](https://github.com/kenankarahan/rotalog)
+git clone https://github.com/kenankarahan/rotalog
 cd rotalog
 
 # Create a virtual environment
